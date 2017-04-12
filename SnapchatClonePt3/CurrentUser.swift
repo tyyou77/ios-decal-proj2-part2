@@ -43,9 +43,12 @@ class CurrentUser {
                         postArray.append(postDict[key] as! String)
                     }
                 }
+                completion(postArray)
+            } else {
+                completion([])
             }
         })
-        completion(postArray)
+        
     }
     
     /*

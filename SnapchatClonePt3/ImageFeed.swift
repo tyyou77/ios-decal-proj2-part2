@@ -118,21 +118,14 @@ func getPosts(user: CurrentUser, completion: @escaping ([Post]?) -> Void) {
     dbRef.child(firPostsNode).observeSingleEvent(of: .value, with: { (snapshot) in
         if snapshot.exists() {
             if let allPosts = snapshot.value as? [String:AnyObject] {
-                dbRef.child(firUsersNode).child(user.id).child(firReadPostsNode).observeSingleEvent(of: .value, with: { (secondSnap) in
-                    if secondSnap.exists() {
-                        if let readPosts = secondSnap.value as? [String:String] {
-                            for key in allPosts.keys {
-                                let readOrNot = readPosts.keys.contains(key)
-                                let currentPost: [String:String] = allPosts[key] as! [String : String]
-                                postArray.append(Post(id: key, username: currentPost[firUsernameNode]!, postImagePath: currentPost[firImagePathNode]!, thread: currentPost[firThreadNode]!, dateString: currentPost[firDateNode]!, read: readOrNot))
-                            }
-                            completion(postArray)
-                        } else {
-                            completion(nil)
-                        }
-                    } else {
-                        completion(nil)
+                
+                user.getReadPostIDs(completion: { (readPosts) in
+                    for key in allPosts.keys {
+                        let readOrNot = readPosts.contains(key)
+                        let currentPost: [String:String] = allPosts[key] as! [String : String]
+                        postArray.append(Post(id: key, username: currentPost[firUsernameNode]!, postImagePath: currentPost[firImagePathNode]!, thread: currentPost[firThreadNode]!, dateString: currentPost[firDateNode]!, read: readOrNot))
                     }
+                    completion(postArray)
                 })
             } else {
                 completion(nil)
