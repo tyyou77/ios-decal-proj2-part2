@@ -18,6 +18,7 @@ class PostsTableViewController: UIViewController, UITableViewDelegate, UITableVi
         static let postPhotoSize = UIScreen.main.bounds
     }
     
+    
     // Dictionary that maps IDs of images to the actual UIImage data
     var loadedImagesById: [String:UIImage] = [:]
     
@@ -52,6 +53,7 @@ class PostsTableViewController: UIViewController, UITableViewDelegate, UITableVi
     */
     override func viewWillAppear(_ animated: Bool) {
         // YOUR CODE HERE
+        
     }
 
     override func didReceiveMemoryWarning() {
@@ -72,6 +74,22 @@ class PostsTableViewController: UIViewController, UITableViewDelegate, UITableVi
     */
     func updateData() {
         // YOUR CODE HERE
+        
+        getPosts(user: currentUser) { (posts) in
+            if let posts = posts {
+                clearThreads()
+                for currentPost in posts {
+                    addPostToThread(post: currentPost)
+                    getDataFromPath(path: currentPost.postImagePath, completion: { (data) in
+                        if let data = data {
+                            loadedImagesById[currentPost.postId] = UIImage(data: data)
+                        }
+                    })
+                }
+                postTableView.reloadData()
+            }
+        }
+        
     }
     
     // MARK: Custom methods (relating to UI)

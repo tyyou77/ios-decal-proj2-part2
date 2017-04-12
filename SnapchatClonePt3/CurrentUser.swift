@@ -34,6 +34,18 @@ class CurrentUser {
     func getReadPostIDs(completion: @escaping ([String]) -> Void) {
         var postArray: [String] = []
         // TODO
+        
+        let readPosts = dbRef.child(firUsersNode).child(id).child(firReadPostsNode)
+        readPosts.observeSingleEvent(of: .value, with: { (snapshot) in
+            if snapshot.exists() {
+                if let postDict = snapshot.value as? [String:AnyObject] {
+                    for key in postDict.keys {
+                        postArray.append(postDict[key] as! String)
+                    }
+                }
+            }
+        })
+        completion(postArray)
     }
     
     /*
@@ -45,6 +57,8 @@ class CurrentUser {
     */
     func addNewReadPost(postID: String) {
         // TODO
+        let readPost = dbRef.child(firUsersNode).child(id).child(firReadPostsNode).childByAutoId()
+        readPost.setValue(postID)
     }
     
 }
